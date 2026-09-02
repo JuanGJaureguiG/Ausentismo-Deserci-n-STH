@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ausentismo y Deserción · UNIMINUTO Sede Tolima-Huila</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="tag">UNIMINUTO · Sede Tolima-Huila</div>
+      <h1>Ausentismo y Deserción</h1>
+      <div class="sub">Histórico por Centro Universitario, 2012-2 a 2026-2</div>
+    </div>
+    <!-- los grupos de filtros se generan aquí desde app.js -->
+    <button class="clear-all" id="clear-all">Limpiar todos los filtros</button>
+  </aside>
+
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <h2>Análisis de <span id="metric-title">Ausentismo</span></h2>
+        <div class="desc">Usa los filtros de la izquierda (Año, Centro Universitario) para explorar la serie institucional.</div>
+      </div>
+      <div class="as-of">Corte: 31 de agosto de 2026</div>
+    </div>
+
+    <div class="metric-toggle">
+      <button id="tab-ausentismo" class="active">Ausentismo</button>
+      <button id="tab-desercion">Deserción</button>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="label">Tasa promedio</div>
+        <div class="num" id="kpi-tasa">—</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Última tasa registrada</div>
+        <div class="num" id="kpi-ultima">—</div>
+      </div>
+      <div class="kpi">
+        <div class="label">CU con mayor tasa</div>
+        <div class="num" id="kpi-mayor" style="font-size:18px">—</div>
+      </div>
+      <div class="kpi">
+        <div class="label">CU con menor tasa</div>
+        <div class="num" id="kpi-menor" style="font-size:18px">—</div>
+      </div>
+    </div>
+
+    <div class="empty-state" id="empty-state" style="display:none">
+      No hay registros para la combinación de filtros seleccionada.
+    </div>
+
+    <div id="content-body">
+      <div class="grid2">
+        <div class="panel">
+          <h3>Evolución histórica por Centro Universitario</h3>
+          <div class="panel-sub">Serie oficial institucional, 2012-2 a 2026-2</div>
+          <div class="chart-wrap"><canvas id="chart-evolucion"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Promedio por CU</h3>
+          <div class="panel-sub">Según años seleccionados</div>
+          <div class="chart-wrap"><canvas id="chart-cu-bar"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="credit">Tablero generado a partir de la base de datos institucional SAP · Series oficiales de ausentismo y deserción por Centro Universitario.</footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
