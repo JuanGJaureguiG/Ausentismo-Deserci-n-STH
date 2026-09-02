@@ -112,29 +112,35 @@ const dataLabelsPlugin = {
     const type = chart.config.type;
     if (type !== 'bar' && type !== 'line') return;
     const horizontal = chart.options.indexAxis === 'y';
+    const nSeries = chart.data.datasets.filter(d => !d.hidden).length;
 
-    if (type === 'line') {
-      const totalPoints = chart.data.datasets.reduce((a, d) => a + d.data.length, 0);
-      if (totalPoints > 40) return;
-    }
+    // con una sola serie mostramos todas las etiquetas (escalonadas si hay muchos puntos);
+    // con varias series reducimos cuántos puntos se etiquetan por serie para que no se amontonen,
+    // pero siempre se dibuja algo (antes, con muchas series, no se dibujaba ninguna etiqueta).
+    const skip = nSeries <= 1 ? 1 : nSeries === 2 ? 2 : 3;
 
     chart.data.datasets.forEach((dataset, dsIndex) => {
       const meta = chart.getDatasetMeta(dsIndex);
       if (meta.hidden) return;
       const nPoints = dataset.data.length;
-      // con muchos puntos, escalonamos la altura de las etiquetas en 3 niveles para que no se encimen
-      const stagger = type === 'line' && nPoints > 12;
+      const shownCount = Math.ceil(nPoints / skip);
+      const rows = shownCount > 15 ? 3 : shownCount > 8 ? 2 : 1;
+      const rowOffsets = [12, 26, 40].slice(0, rows);
+
       meta.data.forEach((el, i) => {
         const value = dataset.data[i];
         if (value === null || value === undefined) return;
+        if (skip > 1 && i % skip !== 0 && i !== nPoints - 1) return;
+
         ctx.save();
-        ctx.font = stagger ? "600 9px 'IBM Plex Sans', sans-serif" : "600 10px 'IBM Plex Sans', sans-serif";
+        ctx.font = (type === 'line' && rows > 1) ? "600 9.5px 'IBM Plex Sans', sans-serif" : "600 10px 'IBM Plex Sans', sans-serif";
         ctx.fillStyle = type === 'line' ? (dataset.borderColor || PALETTE.ink) : PALETTE.ink;
         ctx.textBaseline = 'middle';
         const pos = el.tooltipPosition();
         if (type === 'line') {
           ctx.textAlign = 'center';
-          const yOffset = stagger ? [10, 24, 38][i % 3] : 10;
+          const shownIdx = Math.floor(i / skip);
+          const yOffset = rowOffsets[shownIdx % rows];
           ctx.fillText(value.toFixed(2) + '%', pos.x, pos.y - yOffset);
         } else if (horizontal) {
           ctx.textAlign = 'left';
@@ -187,7 +193,7 @@ function render() {
     data: { labels: periods, datasets: evoDatasets },
     options: {
       responsive: true, maintainAspectRatio: false,
-      layout: { padding: { top: 46 } },
+      layout: { padding: { top: 56 } },
       plugins: { legend: { labels: { font: baseFont, color: PALETTE.ink, boxWidth: 10 } } },
       scales: {
         x: { ticks: { font: baseFont, color: PALETTE.muted, maxRotation: 45, minRotation: 45 }, grid: { display: false } },
